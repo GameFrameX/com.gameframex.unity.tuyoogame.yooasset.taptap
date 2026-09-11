@@ -1,87 +1,123 @@
-﻿#if UNITY_WEBGL && TAPMINIGAME
+#if UNITY_WEBGL && ENABLE_TAPTAP_MINI_GAME && TAPTAPMINIGAME
+using UnityEngine.Networking;
+
 using YooAsset;
 
-internal class TPFSLoadBundleOperation : FSLoadBundleOperation
+namespace YooAsset.TapTap
 {
-    private enum ESteps
+    [UnityEngine.Scripting.Preserve]
+    internal class TPFSLoadBundleOperation : FSLoadBundleOperation
     {
-        None,
-        LoadAssetBundle,
-        Done,
-    }
-
-    private readonly TaptapFileSystem _fileSystem;
-    private readonly PackageBundle _bundle;
-    private LoadWebAssetBundleOperation _loadWebAssetBundleOp;
-    private ESteps _steps = ESteps.None;
-
-    internal TPFSLoadBundleOperation(TaptapFileSystem fileSystem, PackageBundle bundle)
-    {
-        _fileSystem = fileSystem;
-        _bundle = bundle;
-    }
-    protected override void InternalStart()
-    {
-        _steps = ESteps.LoadAssetBundle;
-    }
-    protected override void InternalUpdate()
-    {
-        if (_steps == ESteps.None || _steps == ESteps.Done)
-            return;
-
-        if (_steps == ESteps.LoadAssetBundle)
+        [UnityEngine.Scripting.Preserve]
+        private enum ESteps
         {
-            if (_loadWebAssetBundleOp == null)
-            {
-                string mainURL = _fileSystem.RemoteServices.GetRemoteMainURL(_bundle.FileName);
-                string fallbackURL = _fileSystem.RemoteServices.GetRemoteFallbackURL(_bundle.FileName);
-                DownloadFileOptions options = new DownloadFileOptions(int.MaxValue);
-                options.SetURL(mainURL, fallbackURL);
+            None,
+            LoadBundleFile,
+            Done,
+        }
 
-                if (_bundle.Encrypted)
+        private readonly TaptapFileSystem _fileSystem;
+        private readonly PackageBundle _bundle;
+        private UnityWebRequest _webRequest;
+        private ESteps _steps = ESteps.None;
+        private string _packagerVersion;
+
+        [UnityEngine.Scripting.Preserve]
+        internal TPFSLoadBundleOperation(TaptapFileSystem fileSystem, PackageBundle bundle,string packagerVersion)
+        {
+            _fileSystem = fileSystem;
+            _bundle = bundle;
+            _packagerVersion = packagerVersion;
+        }
+
+        [UnityEngine.Scripting.Preserve]
+        public override void InternalOnStart()
+        {
+            _steps = ESteps.LoadBundleFile;
+        }
+
+        [UnityEngine.Scripting.Preserve]
+        public override void InternalOnUpdate()
+        {
+            if (_steps == ESteps.None || _steps == ESteps.Done)
+            {
+                return;
+            }
+
+            if (_steps == ESteps.LoadBundleFile)
+            {
+                if (_webRequest == null)
                 {
-                    _loadWebAssetBundleOp = new LoadWebEncryptAssetBundleOperation(_bundle, options, _fileSystem.DecryptionServices);
-                    _loadWebAssetBundleOp.StartOperation();
-                    AddChildOperation(_loadWebAssetBundleOp);
+                    string mainURL = _fileSystem.RemoteServices.GetRemoteMainURL(_bundle.FileName, _packagerVersion);
+                    _webRequest = UnityWebRequestAssetBundle.GetAssetBundle(mainURL);
+                    _webRequest.SendWebRequest();
+                }
+
+                DownloadProgress = _webRequest.downloadProgress;
+                DownloadedBytes = (long)_webRequest.downloadedBytes;
+                Progress = DownloadProgress;
+                if (_webRequest.isDone == false)
+                {
+                    return;
+                }
+
+                if (CheckRequestResult())
+                {
+                    _steps = ESteps.Done;
+                    Result = (_webRequest.downloadHandler as DownloadHandlerAssetBundle)?.assetBundle;
+
+
+                    Status = EOperationStatus.Succeed;
                 }
                 else
                 {
-                    _loadWebAssetBundleOp = new LoadTaptapAssetBundleOperation(_bundle, options);
-                    _loadWebAssetBundleOp.StartOperation();
-                    AddChildOperation(_loadWebAssetBundleOp);
+                    _steps = ESteps.Done;
+                    Status = EOperationStatus.Failed;
                 }
             }
+        }
 
-            _loadWebAssetBundleOp.UpdateOperation();
-            Progress = _loadWebAssetBundleOp.Progress;
-            DownloadProgress = _loadWebAssetBundleOp.DownloadProgress;
-            DownloadedBytes = _loadWebAssetBundleOp.DownloadedBytes;
-            if (_loadWebAssetBundleOp.IsDone == false)
-                return;
-
-            if (_loadWebAssetBundleOp.Status == EOperationStatus.Succeed)
-            {
-                var assetBundle = _loadWebAssetBundleOp.Result;
-                _steps = ESteps.Done;
-                Result = new TPAssetBundleResult(_fileSystem, _bundle, assetBundle);
-                Status = EOperationStatus.Succeed;
-            }
-            else
+        [UnityEngine.Scripting.Preserve]
+        public override void InternalWaitForAsyncComplete()
+        {
+            if (_steps != ESteps.Done)
             {
                 _steps = ESteps.Done;
                 Status = EOperationStatus.Failed;
-                Error = _loadWebAssetBundleOp.Error;
+                Error = "WebGL platform not support sync load method !";
+                UnityEngine.Debug.LogError(Error);
             }
         }
-    }
-    public override void InternalWaitForAsyncComplete()
-    {
-        if (_steps != ESteps.Done)
+
+        [UnityEngine.Scripting.Preserve]
+        public override void AbortDownloadOperation()
         {
-            _steps = ESteps.Done;
-            Status = EOperationStatus.Failed;
-            Error = "WebGL platform not support sync load method !";
-            UnityEngine.Debug.LogError(Error);
+        }
+
+        [UnityEngine.Scripting.Preserve]
+        private bool CheckRequestResult()
+        {
+#if UNITY_2020_3_OR_NEWER
+            if (_webRequest.result != UnityWebRequest.Result.Success)
+            {
+                Error = _webRequest.error;
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+#else
+            if (_webRequest.isNetworkError || _webRequest.isHttpError)
+            {
+                Error = _webRequest.error;
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+#endif
         }
     }
 }

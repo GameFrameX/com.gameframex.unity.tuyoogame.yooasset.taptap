@@ -1,111 +1,113 @@
-﻿#if UNITY_WEBGL && TAPMINIGAME
+#if UNITY_WEBGL && ENABLE_TAPTAP_MINI_GAME && TAPTAPMINIGAME
 using UnityEngine;
+using UnityEngine.Networking;
+
 using YooAsset;
 
-internal class TPFSDownloadFileOperation : FSDownloadFileOperation
+namespace YooAsset.TapTap
 {
-    protected enum ESteps
+    [UnityEngine.Scripting.Preserve]
+    internal class TPFSDownloadFileOperation : DefaultDownloadFileOperation
     {
-        None,
-        CreateRequest,
-        CheckRequest,
-        TryAgain,
-        Done,
-    }
+        private TaptapFileSystem _fileSystem;
+        private ESteps _steps = ESteps.None;
 
-    private readonly TaptapFileSystem _fileSystem;
-    private readonly DownloadFileOptions _options;
-    private UnityWebCacheRequestOperation _webCacheRequestOp;
-    private int _requestCount = 0;
-    private float _tryAgainTimer;
-    private int _failedTryAgain;
-    private ESteps _steps = ESteps.None;
-
-    internal TPFSDownloadFileOperation(TaptapFileSystem fileSystem, PackageBundle bundle, DownloadFileOptions options) : base(bundle)
-    {
-        _fileSystem = fileSystem;
-        _options = options;
-    }
-    protected override void InternalStart()
-    {
-        _steps = ESteps.CreateRequest;
-    }
-    protected override void InternalUpdate()
-    {
-        // 创建下载器
-        if (_steps == ESteps.CreateRequest)
+        [UnityEngine.Scripting.Preserve]
+        internal TPFSDownloadFileOperation(TaptapFileSystem fileSystem, PackageBundle bundle, DownloadParam param) : base(bundle, param)
         {
-            string url = GetRequestURL();
-            _webCacheRequestOp = new UnityWebCacheRequestOperation(url);
-            _webCacheRequestOp.StartOperation();
-            AddChildOperation(_webCacheRequestOp);
-            _steps = ESteps.CheckRequest;
+            _fileSystem = fileSystem;
         }
 
-        // 检测下载结果
-        if (_steps == ESteps.CheckRequest)
+        [UnityEngine.Scripting.Preserve]
+        public override void InternalOnStart()
         {
-            _webCacheRequestOp.UpdateOperation();
-            Progress = _webCacheRequestOp.Progress;
-            DownloadProgress = _webCacheRequestOp.DownloadProgress;
-            DownloadedBytes = _webCacheRequestOp.DownloadedBytes;
-            if (_webCacheRequestOp.IsDone == false)
-                return;
+            _steps = ESteps.CreateRequest;
+        }
 
-            if (_webCacheRequestOp.Status == EOperationStatus.Succeed)
+        [UnityEngine.Scripting.Preserve]
+        public override void InternalOnUpdate()
+        {
+            // 创建下载器
+            if (_steps == ESteps.CreateRequest)
             {
-                _steps = ESteps.Done;
-                Status = EOperationStatus.Succeed;
+                // 获取请求地址
+                _requestURL = GetRequestURL();
 
-                //TODO 需要验证插件请求器的下载进度
-                DownloadProgress = 1f;
-                DownloadedBytes = Bundle.FileSize;
-                Progress = 1f;
+                // 重置变量
+                ResetRequestFiled();
+
+                // 创建下载器
+                CreateWebRequest();
+
+                _steps = ESteps.CheckRequest;
             }
-            else
+
+            // 检测下载结果
+            if (_steps == ESteps.CheckRequest)
             {
-                if (_failedTryAgain > 0)
+                DownloadProgress = _webRequest.downloadProgress;
+                DownloadedBytes = (long)_webRequest.downloadedBytes;
+                Progress = DownloadProgress;
+                if (_webRequest.isDone == false)
                 {
-                    _steps = ESteps.TryAgain;
-                    YooLogger.Warning($"Failed download : {_webCacheRequestOp.URL} Try again !");
+                    CheckRequestTimeout();
+                    return;
+                }
+
+                // 检查网络错误
+                if (CheckRequestResult())
+                {
+                    _steps = ESteps.Done;
+                    Status = EOperationStatus.Succeed;
                 }
                 else
                 {
-                    _steps = ESteps.Done;
+                    _steps = ESteps.TryAgain;
+                }
+
+                // 注意：最终释放请求器
+                DisposeWebRequest();
+            }
+
+            // 重新尝试下载
+            if (_steps == ESteps.TryAgain)
+            {
+                if (FailedTryAgain <= 0)
+                {
                     Status = EOperationStatus.Failed;
-                    Error = _webCacheRequestOp.Error;
+                    _steps = ESteps.Done;
                     YooLogger.Error(Error);
+                    return;
+                }
+
+                _tryAgainTimer += Time.unscaledDeltaTime;
+                if (_tryAgainTimer > 1f)
+                {
+                    FailedTryAgain--;
+                    _steps = ESteps.CreateRequest;
+                    YooLogger.Warning(Error);
                 }
             }
         }
 
-        // 重新尝试下载
-        if (_steps == ESteps.TryAgain)
+        [UnityEngine.Scripting.Preserve]
+        private void CreateWebRequest()
         {
-            _tryAgainTimer += Time.unscaledDeltaTime;
-            if (_tryAgainTimer > 1f)
+            _webRequest = UnityWebRequestAssetBundle.GetAssetBundle(_requestURL);
+            _webRequest.disposeDownloadHandlerOnDispose = true;
+            _webRequest.SendWebRequest();
+        }
+
+        [UnityEngine.Scripting.Preserve]
+        private void DisposeWebRequest()
+        {
+            if (_webRequest != null)
             {
-                _tryAgainTimer = 0f;
-                _failedTryAgain--;
-                Progress = 0f;
-                DownloadProgress = 0f;
-                DownloadedBytes = 0;
-                _steps = ESteps.CreateRequest;
+                //注意：引擎底层会自动调用Abort方法
+                _webRequest.Dispose();
+                _webRequest = null;
             }
         }
-    }
-
-    /// <summary>
-    /// 获取网络请求地址
-    /// </summary>
-    private string GetRequestURL()
-    {
-        // 轮流返回请求地址
-        _requestCount++;
-        if (_requestCount % 2 == 0)
-            return _options.FallbackURL;
-        else
-            return _options.MainURL;
     }
 }
 #endif

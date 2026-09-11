@@ -1,0 +1,25 @@
+{
+  "name": "YooAsset.TapTap",
+  "rootNamespace": "YooAsset.TapTap",
+  "references": [
+    "TapTapMiniGame",
+    "YooAsset",
+    "GameFrameX.Runtime",
+    "GameFrameX.Asset.Runtime"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [
+    {
+      "name": "com.taptap.minigame",
+      "expression": "",
+      "define": "ENABLE_TAPTAP_MINI_GAME"
+    }
+  ],
+  "noEngineReferences": false
+}

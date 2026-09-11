@@ -1,16 +1,16 @@
 {
-  "name": "com.gameframex.unity.tuyoogame.yooasset.minigame.taptap",
-  "displayName": "Game Frame X YooAsset MiniGame TapTap",
+  "name": "com.gameframex.unity.tuyoogame.yooasset.taptap",
+  "displayName": "Game Frame X YooAsset TapTap",
   "category": "Game Framework X",
-  "description": "Game Frame X YooAsset MiniGame TapTap Component",
+  "description": "YooAsset TapTap mini-game FileSystem adapter | YooAsset TapTap 小游戏适配",
   "version": "1.0.2",
   "unity": "2019.4",
   "keywords": [
     "GameFrameX"
   ],
   "repository": {
-    "name": "com.gameframex.unity.tuyoogame.yooasset.minigame.taptap",
-    "url": "git+https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.minigame.taptap.git",
+    "name": "com.gameframex.unity.tuyoogame.yooasset.taptap",
+    "url": "git+https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap.git",
     "type": "git"
   },
   "author": {
@@ -19,7 +19,8 @@
     "url": "https://alianblank.com/"
   },
   "dependencies": {
-    "com.gameframex.unity.tuyoogame.yooasset": "2.9.4"
+    "com.gameframex.unity.tuyoogame.yooasset": "2.9.4",
+    "com.gameframex.unity.asset": "3.1.1"
   },
   "publishConfig": {
     "access": "public",
@@ -31,6 +32,6 @@
     "@semantic-release/git": "^10.0.1"
   },
   "documentationUrl": "https://gameframex.doc.alianblank.com",
-  "changelogUrl": "https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.minigame.taptap/blob/main/CHANGELOG.md",
-  "licensesUrl": "https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.minigame.taptap/blob/main/LICENSE.md"
+  "changelogUrl": "https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/blob/main/LICENSE.md"
 }

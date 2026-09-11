@@ -1,20 +1,28 @@
-#if UNITY_WEBGL && TAPMINIGAME
+#if UNITY_WEBGL && ENABLE_TAPTAP_MINI_GAME && TAPTAPMINIGAME
+
 using YooAsset;
 
-internal partial class TPFSInitializeOperation : FSInitializeFileSystemOperation
+namespace YooAsset.TapTap
 {
-    private readonly TaptapFileSystem _fileSystem;
+    [UnityEngine.Scripting.Preserve]
+    internal partial class TPFSInitializeOperation : FSInitializeFileSystemOperation
+    {
+        private readonly TaptapFileSystem _fileSystem;
 
-    public TPFSInitializeOperation(TaptapFileSystem fileSystem)
-    {
-        _fileSystem = fileSystem;
-    }
-    protected override void InternalStart()
-    {
-        Status = EOperationStatus.Succeed;
-    }
-    protected override void InternalUpdate()
-    {
+        [UnityEngine.Scripting.Preserve]
+        public TPFSInitializeOperation(TaptapFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem;
+        }
+        [UnityEngine.Scripting.Preserve]
+        public override void InternalOnStart()
+        {
+            Status = EOperationStatus.Succeed;
+        }
+        [UnityEngine.Scripting.Preserve]
+        public override void InternalOnUpdate()
+        {
+        }
     }
 }
 #endif
