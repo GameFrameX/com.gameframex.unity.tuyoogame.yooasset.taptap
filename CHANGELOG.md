@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/compare/1.0.2...1.1.0) (2026-09-11)
+
+
+### Features
+
+* **refactor:** Provider/Creater/asmdef/Operation 改造 + package.json 调整 ([8057e20](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/commit/8057e20a97551867a74fb8b8a1ed02501a39f3e0))
+
 ## [1.0.2](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/compare/1.0.1...1.0.2) (2026-07-30)
 
 
