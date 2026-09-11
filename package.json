@@ -2,11 +2,22 @@
   "name": "com.gameframex.unity.tuyoogame.yooasset.taptap",
   "displayName": "Game Frame X YooAsset TapTap",
   "category": "Game Framework X",
-  "description": "YooAsset TapTap mini-game FileSystem adapter | YooAsset TapTap 小游戏适配",
+  "description": "YooAsset TapTap mini-game FileSystem adapter for Unity WebGL — dedicated IWebPlayModeFileSystemProvider + IFileSystem implementation that integrates the TapTap SDK AssetBundle download/cache flow into YooAsset's standard initialization.\nYooAsset TapTap小游戏 WebGL FileSystem 适配包——提供专属 IWebPlayModeFileSystemProvider 与 IFileSystem 实现，将 TapTap 小游戏 SDK 的 AssetBundle 下载/缓存流程接入 YooAsset 标准初始化链路，支持包版本请求、清单加载、资源包下载/加载与可插拔的远程服务/解密管线。\nDocs: https://gameframex.doc.alianblank.com\nAll-in-One Solution for Indie Game Development · Empowering Indie Developers' Dreams\n独立游戏前后端一体化解决方案 · 独立游戏开发者的圆梦大使",
   "version": "1.1.0",
   "unity": "2019.4",
   "keywords": [
-    "GameFrameX"
+    "GameFrameX",
+    "YooAsset",
+    "TapTap",
+    "TapTap-MiniGame",
+    "MiniGame",
+    "Unity",
+    "Unity-WebGL",
+    "AssetBundle",
+    "FileSystem",
+    "Adapter",
+    "csharp",
+    "upm-package"
   ],
   "repository": {
     "name": "com.gameframex.unity.tuyoogame.yooasset.taptap",
