@@ -61,6 +61,7 @@ namespace YooAsset.TapTap
                 typeof(RequestTapTapPackageHashOperation),
                 typeof(LoadTapTapPackageManifestOperation),
                 typeof(TaptapWebPlayModeFileSystemProvider),
+                typeof(TaptapWebPlayModeFileSystemProvider.Registrar),
             };
 #endif
         }

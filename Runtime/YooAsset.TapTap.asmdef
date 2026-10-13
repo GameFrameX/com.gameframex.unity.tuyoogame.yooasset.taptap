@@ -4,8 +4,7 @@
   "references": [
     "TapTapMiniGame",
     "YooAsset",
-    "GameFrameX.Runtime",
-    "GameFrameX.Asset.Runtime"
+    "YooAsset.Runtime"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

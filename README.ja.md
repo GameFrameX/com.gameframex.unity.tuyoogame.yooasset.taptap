@@ -57,7 +57,7 @@
        }
      ],
      "dependencies": {
-       "com.gameframex.unity.tuyoogame.yooasset.taptap": "1.0.2"
+       "com.gameframex.unity.tuyoogame.yooasset.taptap": "1.2.0"
      }
    }
    ```
@@ -76,6 +76,10 @@
 
 4. リポジトリを Unity プロジェクトの `Packages/` ディレクトリにクローンすると、自動的に読み込まれます。
 
+### アップグレードに関する注意
+
+> **1.2.0 の破壊的変更:** 本パッケージは `com.gameframex.unity.asset` に依存しなくなり、依存は `com.gameframex.unity.tuyoogame.yooasset`（≥ 3.1.0）のみとなります。アップグレード時はコアパッケージを ≥ 3.1.0 に、asset パッケージを導入しているプロジェクトは ≥ 4.1.0 に同時にアップグレードしてください。asset ≥ 4.1.0 が同時に導入されたプロジェクトには影響しません。
+
 ### 使用例
 
 TapTap ファイルシステムを YooAsset の `WebPlayModeParameters` に接続します：
@@ -91,8 +95,12 @@ createParameters.WebFileSystemParameters = TaptapFileSystemCreater.CreateTaptapF
 
 | パッケージ | 説明 |
 | --- | --- |
-| `com.gameframex.unity.tuyoogame.yooasset` 2.9.4 | YooAsset コアランタイムと API。 |
-| `com.gameframex.unity.asset` 3.1.1 | GameFrameX アセット/ランタイム統合。 |
+| `com.gameframex.unity.tuyoogame.yooasset` | YooAsset コアランタイムと API（≥ 3.1.0）。 |
+
+
+## 登録とディスパッチの仕組み
+
+本パッケージが提供する `TaptapWebPlayModeFileSystemProvider`（Priority 5）は、`BeforeSceneLoad` のタイミングでコアパッケージの `WebPlayModeFileSystemProviderRegistry` に自己登録されます。この登録は最初の Web モード初期化より早く行われます。初期化時、アセット抽象層は Priority に基づいて排他的に解決し（Priority が最も高いもの、同優先度なら先に登録されたもの）、プラットフォームのファイルシステムを 1 つだけ選択して初期化します。
 
 ## ドキュメントとリソース
 

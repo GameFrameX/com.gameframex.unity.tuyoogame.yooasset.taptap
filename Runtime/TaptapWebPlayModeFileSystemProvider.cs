@@ -30,8 +30,6 @@
 //  Official Documentation: https://gameframex.doc.alianblank.com/
 // ==========================================================================================
 
-using GameFrameX.Asset.Runtime;
-using GameFrameX.Runtime;
 using UnityEngine;
 using YooAsset;
 
@@ -57,9 +55,7 @@ namespace YooAsset.TapTap
 
         public FileSystemParameters CreateFileSystemParameters(WebPlayModeProviderContext context)
         {
-            // TapTap小游戏暂无并发预载与配置组件
-            // 创建TapTap小游戏文件系统
-            if (context.HostServerURL.IsNullOrWhiteSpace())
+            if (string.IsNullOrWhiteSpace(context.HostServerURL))
             {
                 return TaptapFileSystemCreater.CreateTaptapFileSystemParameters();
             }
@@ -70,6 +66,7 @@ namespace YooAsset.TapTap
         /// <summary>
         /// 运行时自动注册
         /// </summary>
+        [UnityEngine.Scripting.Preserve]
         internal static class Registrar
         {
             [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
