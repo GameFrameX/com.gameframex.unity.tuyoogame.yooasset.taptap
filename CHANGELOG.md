@@ -1,3 +1,20 @@
+# [2.0.0](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/compare/1.1.0...2.0.0) (2026-10-15)
+
+
+### Bug Fixes
+
+* **package:** 对齐 yooasset 3.1.0 依赖并修正品牌命名 ([2922062](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/commit/29220622de75b195b585cf45fc18b4c3de6b29e2))
+
+
+### Features
+
+* **provider:** 接入主包注册表并解除 asset 层依赖 ([c38569b](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/commit/c38569b595d25c35fef3d4668ef9e9152e59c760))
+
+
+### BREAKING CHANGES
+
+* **provider:** 不再依赖 com.gameframex.unity.asset。
+
 # [1.1.0](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/compare/1.0.2...1.1.0) (2026-09-11)
 
 
