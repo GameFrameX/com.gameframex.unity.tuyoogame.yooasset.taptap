@@ -11,21 +11,23 @@ namespace YooAsset.TapTap
     public static class TaptapFileSystemCreater
     {
         [UnityEngine.Scripting.Preserve]
-        public static FileSystemParameters CreateTaptapFileSystemParameters(IRemoteServices remoteServices = null)
+        public static FileSystemParameters CreateTaptapFileSystemParameters(IRemoteServices remoteServices = null, TaptapFileSystemOption option = null)
         {
             string fileSystemClass = typeof(TaptapFileSystem).FullName;
             var fileSystemParams = new FileSystemParameters(fileSystemClass, null);
             fileSystemParams.AddParameter(FileSystemParametersDefine.REMOTE_SERVICES, remoteServices);
+            fileSystemParams.AddParameter(TaptapFileSystemOption.ParameterKey, option ?? new TaptapFileSystemOption());
             return fileSystemParams;
         }
 
         [UnityEngine.Scripting.Preserve]
-        public static FileSystemParameters CreateTaptapPathFileSystemParameters(string buildinPackRoot)
+        public static FileSystemParameters CreateTaptapPathFileSystemParameters(string buildinPackRoot, TaptapFileSystemOption option = null)
         {
             string fileSystemClass = typeof(TaptapFileSystem).FullName;
             var fileSystemParams = new FileSystemParameters(fileSystemClass, null);
             IRemoteServices remoteServices = new TaptapFileSystem.WebRemoteServices(buildinPackRoot);
             fileSystemParams.AddParameter(FileSystemParametersDefine.REMOTE_SERVICES, remoteServices);
+            fileSystemParams.AddParameter(TaptapFileSystemOption.ParameterKey, option ?? new TaptapFileSystemOption());
             return fileSystemParams;
         }
     }
@@ -107,6 +109,11 @@ namespace YooAsset.TapTap
         /// 自定义参数：远程服务接口
         /// </summary>
         public IRemoteServices RemoteServices { private set; get; } = null;
+
+        /// <summary>
+        /// 自定义参数：文件系统选项（直载 bundle 重试参数；未传时保持默认实例，永不为 null）
+        /// </summary>
+        public TaptapFileSystemOption Option { private set; get; } = new TaptapFileSystemOption();
 
         #endregion
 
@@ -190,6 +197,10 @@ namespace YooAsset.TapTap
             if (name == FileSystemParametersDefine.REMOTE_SERVICES)
             {
                 RemoteServices = (IRemoteServices)value;
+            }
+            else if (name == TaptapFileSystemOption.ParameterKey)
+            {
+                Option = (TaptapFileSystemOption)value ?? new TaptapFileSystemOption();
             }
             else
             {

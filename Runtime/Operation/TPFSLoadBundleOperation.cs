@@ -22,6 +22,11 @@ namespace YooAsset.TapTap
         private ESteps _steps = ESteps.None;
         private string _packagerVersion;
 
+        // 重试参数经 TaptapFileSystem.Option 传递（FileSystemParameters 管道，Creater optional 参数注入）：
+        // 默认等价 const 版热修（4 次、0.5/1/2/4s 指数退避）；LoadBundleRetryCount = 0 关闭重试。
+        private int _retryCount;
+        private float _retryWaitUntil;
+
         [UnityEngine.Scripting.Preserve]
         internal TPFSLoadBundleOperation(TaptapFileSystem fileSystem, PackageBundle bundle,string packagerVersion)
         {
@@ -48,6 +53,11 @@ namespace YooAsset.TapTap
             {
                 if (_webRequest == null)
                 {
+                    if (_retryCount > 0 && UnityEngine.Time.realtimeSinceStartup < _retryWaitUntil)
+                    {
+                        return; // 退避等待期：不建连，避免在边缘不稳窗口内立刻撞同一堵墙
+                    }
+
                     string mainURL = _fileSystem.RemoteServices.GetRemoteMainURL(_bundle.FileName, _packagerVersion);
                     _webRequest = UnityWebRequestAssetBundle.GetAssetBundle(mainURL);
                     _webRequest.SendWebRequest();
@@ -71,8 +81,20 @@ namespace YooAsset.TapTap
                 }
                 else
                 {
-                    _steps = ESteps.Done;
-                    Status = EOperationStatus.Failed;
+                    _webRequest.Dispose();
+                    _webRequest = null;
+                    _retryCount += 1;
+                    if (_retryCount > _fileSystem.Option.LoadBundleRetryCount)
+                    {
+                        UnityEngine.Debug.LogWarning($"[TPFSLoadBundleOperation] {_bundle.FileName} 第 {_retryCount} 次下载失败：{Error}");
+                        _steps = ESteps.Done;
+                        Status = EOperationStatus.Failed;
+                        Error = $"{_bundle.FileName} 连续 {_retryCount} 次下载失败：{Error}";
+                        return;
+                    }
+
+                    UnityEngine.Debug.LogWarning($"[TPFSLoadBundleOperation] {_bundle.FileName} 第 {_retryCount} 次下载失败：{Error}，准备重试");
+                    _retryWaitUntil = UnityEngine.Time.realtimeSinceStartup + _fileSystem.Option.LoadBundleRetryBackoffSeconds * (1 << (_retryCount - 1));
                 }
             }
         }
