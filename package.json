@@ -30,7 +30,7 @@
     "url": "https://alianblank.com/"
   },
   "dependencies": {
-    "com.gameframex.unity.tuyoogame.yooasset": "3.1.0"
+    "com.gameframex.unity.tuyoogame.yooasset": "3.2.0"
   },
   "publishConfig": {
     "access": "public",
