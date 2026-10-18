@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/compare/2.0.0...2.1.0) (2026-10-18)
+
+
+### Features
+
+* **filesystem:** 直载重试参数 Option 化并派生基类 ([a5bd34b](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/commit/a5bd34bc2c122305e07e960287667b98cf7b303e))
+
 # [2.0.0](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/compare/1.1.0...2.0.0) (2026-10-15)
 
 
