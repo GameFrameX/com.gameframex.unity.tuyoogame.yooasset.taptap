@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/compare/2.1.0...2.1.1) (2026-11-10)
+
+
+### Bug Fixes
+
+* **tuyoogame.yooasset.taptap:** 添加完整 link.xml 防代码裁剪保护 ([d742b8e](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/commit/d742b8e935d5faeccf09c49c77ab6b4df30f2626))
+
 # [2.1.0](https://github.com/gameframex/com.gameframex.unity.tuyoogame.yooasset.taptap/compare/2.0.0...2.1.0) (2026-10-18)
 
 
